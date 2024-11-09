@@ -1,0 +1,4 @@
+**/__pycache__/
+
+# ignore build output
+inference/build/
