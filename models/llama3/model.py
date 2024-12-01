@@ -224,10 +224,11 @@ class TransformerBlock(nn.Module):
             ffn_dim_multiplier=args.ffn_dim_multiplier,
         )
         self.layer_id = layer_id
-        self.attention_norm = RMSNorm(args.dim, eps=args.norm_eps)
-        self.ffn_norm = RMSNorm(args.dim, eps=args.norm_eps)
+        # self.attention_norm = RMSNorm(args.dim, eps=args.norm_eps)
+        # self.ffn_norm = RMSNorm(args.dim, eps=args.norm_eps)
         # use torch native RMSNorm and check the result
-        # self.attention_norm = nn.RMS
+        self.attention_norm = nn.RMSNorm(args.dim, args.norm_eps)
+        self.ffn_norm = nn.RMSNorm(args.dim, eps=args.norm_eps)
 
     def forward(
         self,
@@ -255,7 +256,7 @@ class Transformer(nn.Module):
         for layer_id in range(params.n_layers):
             self.layers.append(TransformerBlock(layer_id, params))
 
-        self.norm = RMSNorm(params.dim, eps=params.norm_eps)
+        self.norm = nn.RMSNorm(params.dim, eps=params.norm_eps)
         self.output = nn.Linear(params.dim, params.vocab_size)
 
         self.freqs_cis = precompute_freqs_cis(
